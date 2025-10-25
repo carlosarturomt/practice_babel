@@ -4,12 +4,14 @@
   "description": "project to exercices of babel's course",
   "main": "index.js",
   "scripts": {
-    "start": "wds --node-resolve --watch --open",
+    "dev": "wds --node-resolve --watch --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "carlosarturomt",
   "license": "ISC",
   "dependencies": {
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/slim": "^3.9.1",
     "lit": "^3.3.1"
   },
   "devDependencies": {
