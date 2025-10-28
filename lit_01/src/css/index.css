@@ -2,6 +2,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    scrollbar-width: none;
 }
 
 html {
@@ -11,8 +12,24 @@ html {
 }
 
 h1 {
-    color: white;
-    font-size: 6rem;
-    line-height: 1rem;
+    font-size: 7rem;
+    line-height: 1.5rem;
     text-align: center;
+}
+
+.no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE/Edge */
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 3rem;
+        line-height: 1rem;
+    }
 }
