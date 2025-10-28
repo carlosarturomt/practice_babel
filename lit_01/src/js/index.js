@@ -12,11 +12,19 @@ export class SimpleComponent extends LitElement {
       min-height: 100vh;
     }
 
-    button, input, textarea {
+    button, input {
         background: none;
         border: none;
         width: 100%;
         height: 100%;
+        outline: none;
+    }
+
+    textarea {
+        background: none;
+        border: none;
+        width: 95%;
+        height: 75%;
         outline: none;
     }
 
@@ -49,9 +57,18 @@ export class SimpleComponent extends LitElement {
 
     label {
       position: absolute;
-      top: -1rem;
+      top: -0.75rem;
       left: 2rem;
       color: #54abff;
+    }
+
+    a {
+      text-decoration: none;
+      color: #fff;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
 
     .text-sm {
@@ -86,9 +103,10 @@ export class SimpleComponent extends LitElement {
       margin: 0 auto;
       padding: 8rem 1rem;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6rem;
       align-items: start;
+      justify-items: stretch;
     }
 
     .bg-gradient-blue-dodger {
@@ -96,8 +114,12 @@ export class SimpleComponent extends LitElement {
       background: linear-gradient(180deg,rgba(0,6,12,1),rgba(0,64,128,1) 25%,rgba(30,144,255,1) 75%,rgba(30,144,255,.75));
     }
 
-    .bg-whiter {
+    .bg-white {
       background: #fff;
+    }
+
+    .text-white {
+      color: #fff;
     }
 
     .w-full {
@@ -108,35 +130,50 @@ export class SimpleComponent extends LitElement {
       height: 100vh;
     }
 
+    .m-auto {
+      margin: 0 auto;
+    }
+
     .flex-center {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 2rem;
     }
 
     .flex-col {
       flex-direction: column;
     }
 
+    .gap-1 {
+      gap: 1rem;
+    }
+
+    .gap-2 {
+      gap: 2rem;
+    }
+
     .card {
-      height: 240px;
-      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 240px;
+      width: 100%;
+      height: 100%;
       padding: 2rem;
       border-radius: 6px;
       border-radius: 2rem;
       background: #fff;
       box-shadow: 0 0 #000, 0 0 #000, 0 0 15px -3px rgb(0 0 0/0.1),0 4px 6px -4px rgb(0 0 0/0.1);
+      overflow: auto;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* Mini grid demo dentro del contador */
     .inner-grid {
       position: relative;
       width: 100%;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
       gap: 6px;
-      margin-top: 0.5rem;
     }
 
     .inner-item {
@@ -148,6 +185,22 @@ export class SimpleComponent extends LitElement {
 
     .p-1 {
       padding: 1rem;
+    }
+
+    .p-2 {
+      padding: 2rem;
+    }
+
+    .w-80 {
+      width: 80%;
+    }
+
+    .w-100 {
+      width: 100%;
+    }
+
+    .overflow-auto {
+      overflow: auto;
     }
 
     .button {
@@ -175,6 +228,31 @@ export class SimpleComponent extends LitElement {
     .text-border {
       color: transparent;
       -webkit-text-stroke: 2px white;
+    }
+
+    .col-2 {
+      grid-column: span 2;
+    }
+
+    .row-2 {
+      grid-row: span 2;
+    }
+
+    .bg-blue {
+      background: #1e90ff;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 2fr;
+        gap: 2rem;
+      }
+
+      .card {
+        width: 88%;
+        height: auto;
+        aspect-ratio: auto;
+      }
     }
 
     @media (max-width: 600px) {
@@ -206,7 +284,16 @@ export class SimpleComponent extends LitElement {
         grid-template-columns: 1fr;
       }
 
+      .col-2 {
+        grid-column: span 1;
+      }
+
+      .row-2 {
+        grid-row: span 1;
+      }
+
       .card {
+        width: 84.5%;
         height: auto;
         aspect-ratio: auto;
       }
@@ -224,6 +311,17 @@ export class SimpleComponent extends LitElement {
     filterText: { type: String },
     /* V3 */
     formData: { type: Object },
+    /* V4 */
+    loggedIn: { type: Boolean },
+    /* V5 */
+    silentFlag: { type: Boolean },
+    countV5: { type: Number },
+    /* V6 */
+    useLightDOM: { type: Boolean },
+    /* V7 */
+    weatherData: { type: Object },
+    weatherError: { type: String },
+    weatherLoading: { type: Boolean }
   };
 
   constructor() {
@@ -238,11 +336,23 @@ export class SimpleComponent extends LitElement {
     this.filterText = '';
     /* V3 */
     this.formData = null;
+    /* V4 */
+    this.loggedIn = false;
+    /* V5 */
+    this.silentFlag = false;
+    this.countV5 = 0;
+    /* V6 */
+    this.useLightDOM = false;
+    /* V7 */
+    this.weatherData = null;
+    this.weatherError = null;
+    this.weatherLoading = false;
   }
 
   firstUpdated() {
     this._initParticles();
     this._animateImage();
+    this._fetchWeather();
   }
 
   async _initParticles() {
@@ -404,7 +514,81 @@ export class SimpleComponent extends LitElement {
     }
   }
 
+  /* V4 */
+  _toggleLogin() {
+    this.loggedIn = !this.loggedIn;
+  }
 
+  /* V5 */
+  shouldUpdate(changedProps) {
+    if (changedProps.has('silentFlag') && changedProps.size === 1) {
+      console.log('❌ No se actualiza el DOM (solo cambió silentFlag)');
+      return false;
+    }
+    console.log('✅ Se actualiza el DOM');
+    return true;
+  }
+
+  _incrementV5() {
+    this.countV5++;
+  }
+
+  _toggleSilentFlag() {
+    this.silentFlag = !this.silentFlag;
+    console.log(`silentFlag cambiado a: ${this.silentFlag}`);
+  }
+
+  /* V6 */
+  /* createRenderRoot() {
+    return this.useLightDOM ? this : super.createRenderRoot();
+  } */
+
+  createRenderRoot() {
+    if (this.useLightDOM) {
+      const style = document.createElement('style');
+      style.textContent = SimpleComponent.styles.cssText;
+      this.appendChild(style);
+      return this;
+    } else {
+      return super.createRenderRoot();
+    }
+  }
+
+  /* V7 */
+  async _fetchWeather() {
+    this.weatherLoading = true;
+    this.weatherError = null;
+
+    try {
+      const response = await fetch(
+        'https://api.open-meteo.com/v1/forecast?latitude=19.43&longitude=-99.13&current_weather=true'
+      );
+
+      // Manejar códigos de estado
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Error 401: No autorizado');
+        } else if (response.status === 301) {
+          throw new Error('Error 301: Redirección permanente');
+        } else {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+      }
+
+      const data = await response.json();
+      this.weatherData = data;
+
+    } catch (error) {
+      // Manejar errores de CORS y otros
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        this.weatherError = 'Error de CORS: No se puede acceder a la API desde este dominio';
+      } else {
+        this.weatherError = error.message;
+      }
+    } finally {
+      this.weatherLoading = false;
+    }
+  }
 
   render() {
     return html`
@@ -413,7 +597,7 @@ export class SimpleComponent extends LitElement {
         <div id="tsparticles"></div>
 
         <section class=${`bg-gradient-blue-dodger`}>
-          <aside class=${`h-screen flex-center flex-col`}>
+          <aside class=${`h-screen flex-center flex-col gap-1`}>
             <figure>
               <picture>
                 <img
@@ -436,7 +620,7 @@ export class SimpleComponent extends LitElement {
           <h3 class=${`w-full text-xl`}>Hola, <span>${this.name}</span> 👋</h3>
 
           <!-- V1 -->
-          <aside class="card flex-center flex-col text-base text-center">
+          <aside class="card flex-center flex-col gap-1 text-base text-center">
             <h3>Versión 1 - Propiedades reactivas y estilos</h3>
             <p>${this._statusMessage()}</p>
 
@@ -446,7 +630,7 @@ export class SimpleComponent extends LitElement {
               </div>
               <div class="inner-item">
                 <button
-                  class="button text-sm"
+                  class ="w-100 button text-sm"
                   @click=${this._handleClick}
                   ?disabled=${this.disabled}
                 >
@@ -457,7 +641,7 @@ export class SimpleComponent extends LitElement {
           </aside>
 
           <!-- V2 -->
-          <aside class="card flex-center flex-col text-base text-center ">
+          <aside class="card flex-center flex-col gap-1 text-base text-center ">
             <h3>Versión 2 - Listas y rendimiento</h3>
 
             <div class="inner-grid">
@@ -486,7 +670,7 @@ export class SimpleComponent extends LitElement {
               </div>
               <div class="inner-item">
                 <button
-                  class="button text-sm"
+                  class="w-100 button text-sm"
                   @click=${() => {
         const name = prompt('Nuevo item:')?.trim();
         if (!name) return null;
@@ -499,7 +683,7 @@ export class SimpleComponent extends LitElement {
             </div>
           </aside>
 
-          <aside class="card flex-center flex-col text-base text-center">
+          <aside class="card flex-center flex-col gap-1 text-base text-center">
             <h3>Versión 2 - Lista</h3>
               ${guard([this.items, this.filterText], () => {
         const filtered = this._renderFilteredItems();
@@ -511,16 +695,16 @@ export class SimpleComponent extends LitElement {
             </ul>
           </div>
         `
-          : html``; // nada se muestra si filtered está vacío
+          : html``;
       })}
           </aside>
 
           <!-- V3 -->
-          <aside class="w-full card  text-base text-center">
+          <aside class="col-2 row-2 card text-base text-center">
             <h3>Versión 3 - Formularios accesibles</h3>
-            <form @submit=${this._handleFormSubmit} class="flex-col flex-center" style="gap: 1rem; width: 100%;" action="#" method="POST" >
+            <form @submit=${this._handleFormSubmit} class="w-100 flex-col flex-center gap-2" action="#" method="POST" >
               <div class="inner-grid">
-                <label for="title">Asunto (Selecciona un asunto de la lista o escribe tu objetivo):</label>
+                <label class="text-sm" for="title">Asunto (Selecciona un asunto de la lista o escribe tu objetivo):</label>
                 <div class="inner-item w-full p-1">
                   <input
                     list="titles"
@@ -540,8 +724,8 @@ export class SimpleComponent extends LitElement {
               </div>
 
               <div class="inner-grid">
-                <label for="details">Detalle:</label>
-                <div class="inner-item" style="padding: 0.5rem; width: 100%;">
+                <label class="text-sm" for="details">Detalle:</label>
+                <div class="inner-item">
                   <textarea id="details"
                     class="text-base p-1"
                     name="details" rows="4" cols="40" ></textarea>
@@ -550,8 +734,8 @@ export class SimpleComponent extends LitElement {
 
               <div class="inner-grid">
                 <div class="inner-item">
-                  <label for="email">Tu email:</label>
-                  <div class="p-1" style="padding: 0.5rem; width: 100%;">
+                  <label class="text-sm" for="email">Tu email:</label>
+                  <div class="p-1">
                     <input
                       type="email"
                       id="email"
@@ -559,39 +743,184 @@ export class SimpleComponent extends LitElement {
                       required
                       placeholder="tu@email.com"
                       aria-describedby="email-help"
-                      class="text-base p-1"
+                      class="text-base"
                     >
                   </div>
                 </div>
                 <div class="inner-item">
-                  <button type="submit" class="button text-sm">Enviar Formulario</button>
+                  <button type="submit" class="w-100 button text-sm">Enviar Formulario</button>
                 </div>
               </div>
             </form>
 
             ${this.formData ? html`
-              <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 120, 255, 0.08); border-radius: 1rem; width: 100%;">
-                <p style="font-weight: bold; margin-bottom: 0.5rem;">Valores enviados:</p>
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                  <li style="margin-bottom: 0.25rem;">
+              <div>
+                <p>Valores enviados:</p>
+                <ul>
+                  <li>
                     <strong>Asunto:</strong> ${this.formData.title}
                   </li>
-                  <li style="margin-bottom: 0.25rem;">
+                  <li>
                     <strong>Detalle:</strong> ${this.formData.details}
                   </li>
-                  <li style="margin-bottom: 0.25rem;">
+                  <li>
                     <strong>Email:</strong> ${this.formData.email}
                   </li>
-                  <li style="margin-bottom: 0.25rem;">
+                  <li>
                     <strong>Fecha:</strong> ${new Date().toLocaleString()}
                   </li>
                 </ul>
               </div>
               ` : ''}
+          </aside>
+
+          <!-- V4 -->
+          <aside class="card flex-center flex-col gap-1 text-base text-center">
+            <slot name="header_v4"></slot>
+
+            <p class="text-base">
+              ${this.loggedIn
+        ? html`<span>Bienvenido de nuevo, ${this.name} 👋</span>`
+        : html`<span>Por favor inicia sesión para continuar</span>`}
+            </p>
+
+            <div class="inner-grid">
+              <div class="inner-item">
+                <p class=${`text-sm`}>${this.loggedIn ? 'Login ✅' : ' Logout ❌'}</p>
+              </div>
+              <div class="inner-item">
+                <button
+                  class ="w-100 button text-sm"
+                  @click=${this._toggleLogin}
+                >
+                  ${this.loggedIn ? 'Cerrar sesión' : 'Iniciar sesión'}
+                </button>
+              </div>
+            </div>
+          </aside>
+
+          <!-- V5 -->
+          <aside class="card flex-center flex-col gap-1 text-base text-center">
+            <h3>Versión 5 — shouldUpdate</h3>
+            <p class="text-base">Control del renderizado manual con propiedades reactivas</p>
+
+            <div class="inner-grid">
+              <div class="inner-item">
+                <p class="text-sm">Contador:<strong>${this.countV5}</strong></p>
+              </div>
+              <div class="inner-item">
+                <button class="w-100 button text-sm" @click=${this._incrementV5}>
+                  Incrementar
+                </button>
+              </div>
+            </div>
+
+            <div class="inner-grid">
+              <div class="inner-item">
+                <button class="w-100 button text-sm" @click=${this._toggleSilentFlag}>
+                  Alternar SilentFlag
+                </button>
+              </div>
+              <div class="inner-item">
+                <p class="text-sm">SilentFlag: <strong>${this.silentFlag}</strong></p>
+              </div>
+            </div>
+
+            <p class="text-sm">
+              Abre la consola para ver cuándo el DOM se actualiza o se ignora.
+            </p>
+          </aside>
+
+          <!-- V6 -->
+          <aside class="card flex-center flex-col gap-1 text-base text-center">
+            <h3>Versión 6 — Light DOM</h3>
+
+            <div class="inner-grid">
+              <div class="inner-item">
+                <p class="text-sm">useLightDOM: <strong>${this.useLightDOM}</strong></p>
+              </div>
+              <div class="inner-item">
+                <button class="w-100 button text-sm" @click=${() => {
+        this.useLightDOM = !this.useLightDOM;
+        const newComponent = document.createElement('simple-component');
+        newComponent.useLightDOM = this.useLightDOM;
+        this.replaceWith(newComponent); // reemplazas el componente actual
+      }}>
+                Alternar LightDOM
+                </button>
+              </div>
+            </div>
+          </aside>
+
+          <!-- V7 -->
+          <aside class="col-2 card flex-center flex-col gap-1 text-base text-center">
+            <h3>Versión 7 — Fetch y red</h3>
+
+            <div class="inner-grid">
+              <div class=${`w-full flex-center`}>
+                <span class=${`flex-center`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="6rem" height="6rem" viewBox="0 0 512 512"><defs><linearGradient id="IconifyId19a2bda0a1ab4d333104" x1="96" x2="168" y1="-2.4" y2="122.3" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#d4d7dd"/><stop offset=".5" stop-color="#d4d7dd"/><stop offset="1" stop-color="#bec1c6"/></linearGradient><linearGradient id="IconifyId19a2bda0a1ab4d333105" x2="168" y1="-50.4" y2="74.3" href="#IconifyId19a2bda0a1ab4d333104"/><linearGradient id="IconifyId19a2bda0a1ab4d333106" x1="150" x2="234" y1="119.2" y2="264.8" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fbbf24"/><stop offset=".5" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient><symbol id="IconifyId19a2bda0a1ab4d333107" viewBox="0 0 384 384"><circle cx="192" cy="192" r="84" fill="url(#IconifyId19a2bda0a1ab4d333106)" stroke="#f8af18" stroke-miterlimit="10" stroke-width="6"/><path fill="none" stroke="#fbbf24" stroke-linecap="round" stroke-miterlimit="10" stroke-width="24" d="M192 61.7V12m0 360v-49.7m92.2-222.5l35-35M64.8 319.2l35.1-35.1m0-184.4l-35-35m254.5 254.5l-35.1-35.1M61.7 192H12m360 0h-49.7"><animateTransform additive="sum" attributeName="transform" dur="6s" repeatCount="indefinite" type="rotate" values="0 192 192; 45 192 192"/></path></symbol><symbol id="IconifyId19a2bda0a1ab4d333108" viewBox="0 0 264 72"><path fill="none" stroke="url(#IconifyId19a2bda0a1ab4d333104)" stroke-linecap="round" stroke-miterlimit="10" stroke-width="24" d="M12 60h240"><animateTransform additive="sum" attributeName="transform" dur="6s" repeatCount="indefinite" type="translate" values="-24 0; 24 0; -24 0"/></path><path fill="none" stroke="url(#IconifyId19a2bda0a1ab4d333105)" stroke-linecap="round" stroke-miterlimit="10" stroke-width="24" d="M12 12h240"><animateTransform additive="sum" attributeName="transform" dur="6s" repeatCount="indefinite" type="translate" values="24 0; -24 0; 24 0"/></path></symbol><clipPath id="IconifyId19a2bda0a1ab4d333109"><path fill="none" d="M0 0h512v306H0z"/></clipPath></defs><g clip-path="url(#IconifyId19a2bda0a1ab4d333109)"><use width="384" height="384" href="#IconifyId19a2bda0a1ab4d333107" transform="translate(64 100)"/></g><use width="264" height="72" href="#IconifyId19a2bda0a1ab4d333108" transform="translate(124 336)"/></svg>
+                </span>
+                <p class="text-base">Clima en CDMX</p>
+              </div>
+            </div>
+
+            ${this.weatherError ? html`
+              <div class="inner-item w-full">
+                <p class="text-sm" style="color: red;">Error: ${this.weatherError}</p>
+              </div>
+            ` : ''}
+
+            ${this.weatherData ? html`
+              <div class="inner-grid w-full">
+                <div class="inner-item">
+                  <p class="text-sm">Temperatura: <strong>${this.weatherData.current_weather.temperature}°C</strong></p>
+                </div>
+                <div class="inner-item">
+                  <p class="text-sm">Viento: <strong>${this.weatherData.current_weather.windspeed} km/h</strong></p>
+                </div>
+              </div>
+
+              <div class="inner-grid w-full">
+                <div class="inner-item">
+                  <p class="text-sm">Condición: <strong>${this.weatherData.current_weather.weathercode}</strong></p>
+                </div>
+                <div class="inner-item">
+                <button
+                  class="w-100 button text-sm"
+                  @click=${this._fetchWeather}
+                  ?disabled=${this.weatherLoading}
+                >
+                  ${this.weatherLoading ? 'Cargando...' : 'Obtener Clima'}
+                </button>
+              </div>
+              </div>
+
+              <div class="inner-grid w-full">
+                <details class="inner-item flex-center flex-col">
+                  <summary class="text-sm">Ver JSON completo</summary>
+                  <pre class="text-sm w-80 m-auto overflow-auto">
+                    ${JSON.stringify(this.weatherData, null, 2)}
+                  </pre>
+                </details>
+
+                <div class="inner-item p-1 flex-center">
+                  <p class="text-sm">  <strong>¿Qué pasa sin CORS?</strong><br>
+                  Si la API no tiene CORS habilitado, el navegador bloqueará la petición y verás un error de CORS en la consola.</p>
+                </div>
+              </div>
+
+            ` : ''}
             </aside>
           </article>
 
         </section>
+
+        <footer class=${`bg-blue flex-center p-1`}>
+          <p class=${`text-center text-white text-base`}>
+            2025 - Desarrolaldo por <a href=${`https://github.com/carlosarturomt`}>@carlosarturomt</a>
+          </p>
+        </footer>
       </main>
     `;
   }
