@@ -484,7 +484,8 @@ export class SimpleComponent extends LitElement {
       const templateParams = {
         userEmail: data.email, // o this.name si quieres
         emailTitle: data.title,  // asunto del formulario
-        emailDetails: data.details + `\nEmail: ${data.email}\nFecha: ${new Date().toLocaleString()}`
+        emailDetails: data.details + `\nEmail: ${data.email}\nFecha: ${new Date().toLocaleString()}`,
+        emailColor: data.color  // color
       };
 
       const emailjsResponse = await emailjs.send(
@@ -747,6 +748,23 @@ export class SimpleComponent extends LitElement {
                     >
                   </div>
                 </div>
+              </div>
+
+              <div class="inner-grid">
+                <div class="inner-item">
+                  <label class="text-sm" for="email">Color:</label>
+                  <div class="p-1">
+                    <input
+                      type="color"
+                      id="color"
+                      name="color"
+                      required
+                      aria-describedby="color-help"
+                      class="text-base"
+                      style="height: 2.5rem;"
+                    >
+                  </div>
+                </div>
                 <div class="inner-item">
                   <button type="submit" class="w-100 button text-sm">Enviar Formulario</button>
                 </div>
@@ -765,6 +783,9 @@ export class SimpleComponent extends LitElement {
                   </li>
                   <li>
                     <strong>Email:</strong> ${this.formData.email}
+                  </li>
+                  <li>
+                    <strong>Color:</strong> ${this.formData.color}
                   </li>
                   <li>
                     <strong>Fecha:</strong> ${new Date().toLocaleString()}
