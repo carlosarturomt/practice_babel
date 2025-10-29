@@ -1,0 +1,14 @@
+# Ignorar TODOS los node_modules en cualquier nivel
+**/node_modules/
+
+# Por redundancia (no es necesario, pero buena práctica)
+node_modules/
+
+# Si tienes archivos específicos que no quieres subir
+.DS_Store
+.env
+dist/
+build/
+
+node_modules
+forms
