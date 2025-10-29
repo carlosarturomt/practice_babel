@@ -602,7 +602,7 @@ Fecha: ${new Date().toLocaleString()}`};(await nu.send("default_service","templa
 
         <footer class=${"bg-blue flex-center p-1"}>
           <p class=${"text-center text-white text-base"}>
-            2025 - Desarrolaldo por <a href=${"https://github.com/carlosarturomt"}>@carlosarturomt</a>
+            2025 - Desarrolaldo por <a href=${"https://github.com/carlosarturomt"} target="_blank">@carlosarturomt</a>
           </p>
         </footer>
       </main>
