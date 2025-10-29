@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "wds --node-resolve --watch --open",
+    "build": "esbuild src/js/index.js --bundle --outfile=dist/bundle.js --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "carlosarturomt",
@@ -16,6 +17,7 @@
     "lit": "^3.3.1"
   },
   "devDependencies": {
-    "@web/dev-server": "^0.4.6"
+    "@web/dev-server": "^0.4.6",
+    "esbuild": "^0.25.11"
   }
 }

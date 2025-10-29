@@ -1,0 +1,15 @@
+{
+  "name": "babel",
+  "version": "1.0.0",
+  "description": "projects babel course",
+  "main": "index.js",
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d lit_01"
+  },
+  "author": "carlosarturomt",
+  "license": "ISC"
+}
