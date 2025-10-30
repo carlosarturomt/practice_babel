@@ -294,7 +294,7 @@
     }
   `;static properties={name:{type:String},count:{type:Number},disabled:{type:Boolean},status:{type:String},items:{type:Array},filterText:{type:String},formData:{type:Object},loggedIn:{type:Boolean},silentFlag:{type:Boolean},countV5:{type:Number},useLightDOM:{type:Boolean},weatherData:{type:Object},weatherError:{type:String},weatherLoading:{type:Boolean}};constructor(){super(),this.name="artur",this.count=0,this.disabled=!1,this.status="idle",this.items=[],this.filterText="",this.formData=null,this.loggedIn=!1,this.silentFlag=!1,this.countV5=0,this.useLightDOM=!1,this.weatherData=null,this.weatherError=null,this.weatherLoading=!1}firstUpdated(){this._initParticles(),this._animateImage(),this._fetchWeather()}async _initParticles(){await Xc(Wo),await Wo.load({id:"tsparticles",options:{background:{color:{value:"transparent"}},fpsLimit:64,interactivity:{events:{onHover:{enable:!0,mode:"repulse"}}},particles:{color:{value:"#ffffff"},move:{enable:!0,speed:.5},number:{density:{enable:!0,area:800},value:16},opacity:{value:.5},shape:{type:"circle"},size:{value:2}},detectRetina:!0}})}_animateImage(){let e=this.renderRoot.querySelector("figure img");if(!e)return;let i=0,o=()=>{i+=.01;let s=50+Math.sin(i*.9)*30,r=50+Math.cos(i*.9)*30;e.style.transformOrigin=`${s}% ${r}%`,e.style.transform=`scale(${1.1+Math.sin(i)*.05})`,this._imgAnimationId=requestAnimationFrame(o)};o()}_statusMessage(){switch(this.status){case"loading":return"Cargando...";case"success":return"\u2705 Contador actualizado correctamente";case"error":return"\u26A0\uFE0F Ocurri\xF3 un error";default:return"Listo para iniciar"}}_handleClick(){this.disabled||(this.disabled=!0,this.status="loading",setTimeout(()=>{this.count++,this.count<29?(this.status="success",setTimeout(()=>{this.disabled=!1,this.status="idle"},300)):(this.status="error",this.disabled=!0)},200))}_addItem(e){this.items=[...this.items,e]}_renderFilteredItems(){let e=this.filterText.toLowerCase().trim();return this.items.filter(i=>i.name.toLowerCase().includes(e))}async _handleFormSubmit(e){e.preventDefault();let i=e.target,o=Object.fromEntries(new FormData(i));this.status="loading",this.disabled=!0;try{let s={userEmail:o.email,emailTitle:o.title,emailDetails:o.details+`
 Email: ${o.email}
-Fecha: ${new Date().toLocaleString()}`};(await nu.send("default_service","template_8pklheb",s,"8pzvfG97iPDmCIJGz")).status===200&&(this.formData=o,this.status="success",i.reset(),setTimeout(()=>{this.status="idle",this.disabled=!1},3e3))}catch(s){console.error("Error enviando email:",s),this.status="error",this.formData=o,setTimeout(()=>{this.status="idle",this.disabled=!1},3e3)}}_toggleLogin(){this.loggedIn=!this.loggedIn}shouldUpdate(e){return e.has("silentFlag")&&e.size===1?(console.log("\u274C No se actualiza el DOM (solo cambi\xF3 silentFlag)"),!1):(console.log("\u2705 Se actualiza el DOM"),!0)}_incrementV5(){this.countV5++}_toggleSilentFlag(){this.silentFlag=!this.silentFlag,console.log(`silentFlag cambiado a: ${this.silentFlag}`)}createRenderRoot(){if(this.useLightDOM){let e=document.createElement("style");return e.textContent=t.styles.cssText,this.appendChild(e),this}else return super.createRenderRoot()}async _fetchWeather(){this.weatherLoading=!0,this.weatherError=null;try{let e=await fetch("https://api.open-meteo.com/v1/forecast?latitude=19.43&longitude=-99.13&current_weather=true");if(!e.ok)throw e.status===401?new Error("Error 401: No autorizado"):e.status===301?new Error("Error 301: Redirecci\xF3n permanente"):new Error(`Error HTTP: ${e.status}`);let i=await e.json();this.weatherData=i}catch(e){e.name==="TypeError"&&e.message.includes("Failed to fetch")?this.weatherError="Error de CORS: No se puede acceder a la API desde este dominio":this.weatherError=e.message}finally{this.weatherLoading=!1}}render(){return ve`
+Fecha: ${new Date().toLocaleString()}`,emailColor:o.color};(await nu.send("default_service","template_8pklheb",s,"8pzvfG97iPDmCIJGz")).status===200&&(this.formData=o,this.status="success",i.reset(),setTimeout(()=>{this.status="idle",this.disabled=!1},3e3))}catch(s){console.error("Error enviando email:",s),this.status="error",this.formData=o,setTimeout(()=>{this.status="idle",this.disabled=!1},3e3)}}_toggleLogin(){this.loggedIn=!this.loggedIn}shouldUpdate(e){return e.has("silentFlag")&&e.size===1?(console.log("\u274C No se actualiza el DOM (solo cambi\xF3 silentFlag)"),!1):(console.log("\u2705 Se actualiza el DOM"),!0)}_incrementV5(){this.countV5++}_toggleSilentFlag(){this.silentFlag=!this.silentFlag,console.log(`silentFlag cambiado a: ${this.silentFlag}`)}createRenderRoot(){if(this.useLightDOM){let e=document.createElement("style");return e.textContent=t.styles.cssText,this.appendChild(e),this}else return super.createRenderRoot()}async _fetchWeather(){this.weatherLoading=!0,this.weatherError=null;try{let e=await fetch("https://api.open-meteo.com/v1/forecast?latitude=19.43&longitude=-99.13&current_weather=true");if(!e.ok)throw e.status===401?new Error("Error 401: No autorizado"):e.status===301?new Error("Error 301: Redirecci\xF3n permanente"):new Error(`Error HTTP: ${e.status}`);let i=await e.json();this.weatherData=i}catch(e){e.name==="TypeError"&&e.message.includes("Failed to fetch")?this.weatherError="Error de CORS: No se puede acceder a la API desde este dominio":this.weatherError=e.message}finally{this.weatherLoading=!1}}render(){return ve`
       <main class=${""}>
 
         <div id="tsparticles"></div>
@@ -438,6 +438,23 @@ Fecha: ${new Date().toLocaleString()}`};(await nu.send("default_service","templa
                     >
                   </div>
                 </div>
+              </div>
+
+              <div class="inner-grid">
+                <div class="inner-item">
+                  <label class="text-sm" for="email">Color:</label>
+                  <div class="p-1">
+                    <input
+                      type="color"
+                      id="color"
+                      name="color"
+                      required
+                      aria-describedby="color-help"
+                      class="text-base"
+                      style="height: 2.5rem;"
+                    >
+                  </div>
+                </div>
                 <div class="inner-item">
                   <button type="submit" class="w-100 button text-sm">Enviar Formulario</button>
                 </div>
@@ -456,6 +473,9 @@ Fecha: ${new Date().toLocaleString()}`};(await nu.send("default_service","templa
                   </li>
                   <li>
                     <strong>Email:</strong> ${this.formData.email}
+                  </li>
+                  <li>
+                    <strong>Color:</strong> ${this.formData.color}
                   </li>
                   <li>
                     <strong>Fecha:</strong> ${new Date().toLocaleString()}
