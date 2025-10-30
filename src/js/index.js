@@ -4,6 +4,7 @@ import { guard } from "lit/directives/guard.js";
 import { tsParticles } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
 import emailjs from '@emailjs/browser';
+import 'dotenv/config';
 
 export class SimpleComponent extends LitElement {
   static styles = css`
@@ -490,9 +491,9 @@ export class SimpleComponent extends LitElement {
 
       const emailjsResponse = await emailjs.send(
         'default_service',
-        'template_8pklheb',
+        process.env.VITE_EMAILJS_TEMPLATE_ID_APPROVE,
         templateParams,
-        '8pzvfG97iPDmCIJGz'
+        process.env.VITE_EMAILJS_PUBLIC_KEY
       );
 
       if (emailjsResponse.status === 200) {
